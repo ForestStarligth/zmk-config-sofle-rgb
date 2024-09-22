@@ -1,49 +1,19 @@
-name: Compile ZMK Firmware
-
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-
-env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - board: nice_nano_v2
-            shield: sofle_left
-            cmake_args: "-DCONFIG_FILE=sofle.conf"
-          - board: nice_nano_v2
-            shield: sofle_right
-            cmake_args: "-DCONFIG_FILE=sofle.conf"
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-      with:
-        repository: ForestStarligth/zmk-config-sofle-rgb
-        submodules: true
-
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y cmake ninja-build git python3 python3-pip
-        pip3 install west
-        west zephyr-toolchain fetch
-
-    - name: Set up environment
-      run: |
-        source $ZEPHYR_BASE/zephyr-env.sh
-        west update
-
-    - name: Build project
-      env:
-        CMAKE_ARGS: ${{ matrix.cmake_args }}
-      run: |
-        # 直接在仓库根目录执行构建命令
-        west build -b ${{ matrix.board }} -p always -d build_dir -- $CMAKE_ARGS
+# This file generates the GitHub Actions matrix
+# For simple board + shield combinations, add them
+# to the top level board and shield arrays, for more
+# control, add individual board + shield combinations to
+# the `include` property, e.g:
+#
+# board: [ "nice_nano_v2" ]
+# shield: [ "corne_left", "corne_right" ]
+# include:
+#   - board: bdn9_rev2
+#   - board: nice_nano_v2
+#     shield: reviung41
+#
+---
+include:
+  - board: nice_nano_v2
+    shield: sofle_left #nice_view_adapter nice_view
+  - board: nice_nano_v2
+    shield: sofle_right #nice_view_adapter nice_view
