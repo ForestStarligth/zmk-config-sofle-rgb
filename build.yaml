@@ -45,5 +45,5 @@ jobs:
       env:
         CMAKE_ARGS: ${{ matrix.cmake_args }}
       run: |
-        cd path/to/your/project # 替换为你的项目路径
+        # 直接在仓库根目录执行构建命令
         west build -b ${{ matrix.board }} -p always -d build_dir -- $CMAKE_ARGS
