@@ -1,45 +1,36 @@
-name: Compile ZMK Firmware
+# Uncomment the following line to enable the Sofle OLED Display
+CONFIG_ZMK_DISPLAY=y
 
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+# Uncomment these two lines to add support for encoders
+CONFIG_EC11=y
+CONFIG_EC11_TRIGGER_GLOBAL_THREAD=y
 
-env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+# Uncomment the following line to after compiling both to get left wpm tracking
+CONFIG_ZMK_WPM=y
+CONFIG_ZMK_WIDGET_WPM_STATUS=y
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - board: nice_nano_v2
-            shield: sofle_left
-          - board: nice_nano_v2
-            shield: sofle_right
+#Debounce Increase
+CONFIG_ZMK_KSCAN_DEBOUNCE_PRESS_MS=2
+CONFIG_ZMK_KSCAN_DEBOUNCE_RELEASE_MS=2
 
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-      with:
-        repository: ForestStarligth/zmk-config-sofle-rgb
-        submodules: true
+#Increase Max Combo to Account For Shift Use
+CONFIG_ZMK_COMBO_MAX_COMBOS_PER_KEY=20
 
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y cmake ninja-build git python3 python3-pip
-        pip3 install west
-        west zephyr-toolchain fetch
+CONFIG_ZMK_RGB_UNDERGLOW=y
+CONFIG_ZMK_RGB_UNDERGLOW_HUE_START=240
+CONFIG_ZMK_RGB_UNDERGLOW_SAT_START=100
+CONFIG_ZMK_RGB_UNDERGLOW_BRT_START=10
+CONFIG_ZMK_RGB_UNDERGLOW_BRT_STEP=1
+CONFIG_ZMK_RGB_UNDERGLOW_SAT_STEP=1
+CONFIG_ZMK_RGB_UNDERGLOW_HUE_STEP=1
+CONFIG_ZMK_RGB_UNDERGLOW_AUTO_OFF_IDLE=y
+CONFIG_ZMK_RGB_UNDERGLOW_EXT_POWER=n
+# Use the STRIP config specific to the LEDs you're using
+CONFIG_WS2812_STRIP=y
 
-    - name: Set up environment
-      run: |
-        source $ZEPHYR_BASE/zephyr-env.sh
-        west update
+CONFIG_ZMK_IDLE_TIMEOUT=180000
+CONFIG_ZMK_SLEEP=y
+CONFIG_ZMK_IDLE_SLEEP_TIMEOUT=1800000
 
-    - name: Build project
-      run: |
-        cd path/to/your/project # 替换为你的项目路径
-        west build -b ${{ matrix.board }} -p always -d build_dir -- -DCONFIG_FILE=sofle.conf
+# Use experimental updated BLE settings for better performance
+CONFIG_ZMK_BLE_EXPERIMENTAL_CONN=y
